@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mein Profil – job-vision</title>
+<style>
+  :root {
+    --bg: #f5f3ef;
+    --white: #ffffff;
+    --text: #1a1a1a;
+    --muted: #6b6b6b;
+    --accent: #2c5f8a;
+    --accent-light: #e8f0f7;
+    --green: #3a7d4a;
+    --green-light: #e8f4eb;
+    --yellow: #8a7a2c;
+    --yellow-light: #f7f4e8;
+    --border: #d0cdc8;
+    --radius: 8px;
+    --shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Georgia', serif;
+    font-size: 16px;
+    line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  header {
+    padding: 16px 24px;
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  header img { height: 38px; }
+
+  .header-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+  }
+
+  .phase-label {
+    font-family: Arial, sans-serif;
+    font-size: 11px;
+    font-weight: bold;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .progress-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .progress-label {
+    font-family: Arial, sans-serif;
+    font-size: 11px;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  .progress-bar {
+    width: 120px;
+    height: 5px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 3px;
+    transition: width 0.4s ease;
+  }
+
+  main {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 16px;
+  }
+
+  /* Intro / transition screens */
+  .center-screen {
+    max-width: 540px;
+    width: 100%;
+    text-align: center;
+  }
+
+  .center-screen h1 {
+    font-size: 30px;
+    font-weight: normal;
+    margin-bottom: 8px;
+  }
+
+  .center-screen h2 {
+    font-size: 22px;
+    font-weight: normal;
+    margin-bottom: 10px;
+    color: var(--accent);
+  }
+
+  .center-screen p {
+    color: var(--muted);
+    font-size: 15px;
+    margin-bottom: 8px;
+  }
+
+  .time-note {
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    color: var(--accent);
+    margin-bottom: 28px;
+    display: block;
+  }
+
+  .meta-row {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+    text-align: left;
+  }
+
+  .meta-field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+    min-width: 180px;
+  }
+
+  .meta-field label {
+    font-size: 11px;
+    font-family: Arial, sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+  }
+
+  .meta-field input {
+    border: none;
+    border-bottom: 1.5px solid var(--border);
+    background: transparent;
+    font-family: Georgia, serif;
+    font-size: 15px;
+    padding: 4px 0;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .meta-field input:focus { border-color: var(--accent); }
+
+  .phase-steps {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+  }
+
+  .phase-step {
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    color: var(--muted);
+  }
+
+  .phase-step.active {
+    background: var(--accent-light);
+    border-color: var(--accent);
+    color: var(--accent);
+    font-weight: bold;
+  }
+
+  .phase-step.done {
+    background: var(--green-light);
+    border-color: var(--green);
+    color: var(--green);
+  }
+
+  /* Card screen */
+  .card-screen {
+    width: 100%;
+    max-width: 560px;
+  }
+
+  .category-label {
+    font-family: Arial, sans-serif;
+    font-size: 11px;
+    font-weight: bold;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 12px;
+    text-align: center;
+  }
+
+  .card {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 36px 32px 28px;
+    text-align: center;
+    animation: fadeIn 0.25s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .card-title {
+    font-size: 26px;
+    font-weight: normal;
+    margin-bottom: 16px;
+  }
+
+  .card-desc {
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.7;
+    margin-bottom: 32px;
+  }
+
+  .answer-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .btn-answer {
+    border: 2px solid var(--border);
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 12px 20px;
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.15s;
+    min-width: 120px;
+    letter-spacing: 0.04em;
+  }
+
+  .btn-answer:hover { transform: translateY(-1px); box-shadow: 0 3px 8px rgba(0,0,0,0.1); }
+
+  .btn-yes { border-color: var(--green); color: var(--green); }
+  .btn-yes:hover, .btn-yes.selected { background: var(--green); color: white; }
+
+  .btn-partly { border-color: var(--yellow); color: var(--yellow); }
+  .btn-partly:hover, .btn-partly.selected { background: var(--yellow); color: white; }
+
+  .btn-no { border-color: var(--border); color: var(--muted); }
+  .btn-no:hover, .btn-no.selected { background: var(--muted); color: white; }
+
+  .btn-back {
+    display: block;
+    margin: 14px auto 0;
+    background: transparent;
+    border: none;
+    color: var(--muted);
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    padding: 6px 12px;
+    border-radius: var(--radius);
+    transition: color 0.15s;
+  }
+
+  .btn-back:hover { color: var(--text); }
+
+  /* Hard skills screen */
+  .skills-screen {
+    width: 100%;
+    max-width: 700px;
+  }
+
+  .skills-screen h2 {
+    font-size: 22px;
+    font-weight: normal;
+    margin-bottom: 6px;
+    text-align: center;
+  }
+
+  .skills-intro {
+    text-align: center;
+    color: var(--muted);
+    font-size: 14px;
+    margin-bottom: 28px;
+    font-family: Arial, sans-serif;
+  }
+
+  .skills-category {
+    margin-bottom: 20px;
+  }
+
+  .skills-category-title {
+    font-family: Arial, sans-serif;
+    font-size: 11px;
+    font-weight: bold;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 10px;
+  }
+
+  .skill-item {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 12px 16px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .skill-name {
+    font-size: 14px;
+    flex: 1;
+    min-width: 160px;
+  }
+
+  .skill-buttons {
+    display: flex;
+    gap: 6px;
+  }
+
+  .btn-skill {
+    border: 1.5px solid var(--border);
+    background: transparent;
+    border-radius: 20px;
+    padding: 5px 14px;
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  .btn-skill:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-skill.active-ja { background: var(--green); border-color: var(--green); color: white; font-weight: bold; }
+  .btn-skill.active-teils { background: var(--yellow); border-color: var(--yellow); color: white; font-weight: bold; }
+  .btn-skill.active-nein { background: var(--muted); border-color: var(--muted); color: white; font-weight: bold; }
+
+  .skills-nav {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 28px;
+    flex-wrap: wrap;
+  }
+
+  /* Result screen */
+  .result-screen {
+    max-width: 700px;
+    width: 100%;
+  }
+
+  .result-screen h2 {
+    font-size: 24px;
+    font-weight: normal;
+    margin-bottom: 6px;
+    text-align: center;
+  }
+
+  .result-subtitle {
+    text-align: center;
+    color: var(--muted);
+    font-size: 14px;
+    margin-bottom: 28px;
+    font-family: Arial, sans-serif;
+  }
+
+  .result-block {
+    margin-bottom: 32px;
+  }
+
+  .result-block-title {
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    font-weight: bold;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+    padding-bottom: 6px;
+    border-bottom: 2px solid var(--accent-light);
+  }
+
+  .result-section {
+    margin-bottom: 14px;
+  }
+
+  .result-section-title {
+    font-family: Arial, sans-serif;
+    font-size: 11px;
+    font-weight: bold;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding-bottom: 4px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 8px;
+  }
+
+  .result-section-title.yes { color: var(--green); }
+  .result-section-title.partly { color: var(--yellow); }
+  .result-section-title.no { color: var(--muted); }
+
+  .result-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .result-tag {
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+  }
+
+  .result-tag.yes { background: var(--green-light); color: var(--green); }
+  .result-tag.partly { background: var(--yellow-light); color: var(--yellow); }
+  .result-tag.no { background: #f0f0f0; color: var(--muted); }
+  .result-empty { font-size: 14px; color: var(--muted); font-style: italic; }
+
+  /* Buttons */
+  .btn-primary {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 14px 36px;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    font-weight: bold;
+    letter-spacing: 0.06em;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .btn-primary:hover { background: #1e4a6e; }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--muted);
+    border: 1.5px solid var(--border);
+    padding: 12px 28px;
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-secondary:hover { border-color: var(--muted); color: var(--text); }
+
+  .print-row {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 32px;
+    flex-wrap: wrap;
+  }
+
+  footer {
+    padding: 14px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--muted);
+    font-family: Arial, sans-serif;
+    border-top: 1px solid var(--border);
+  }
+
+  @media print {
+    header, footer, .btn-back, .skills-nav, .print-row { display: none !important; }
+    body { background: white; }
+    .card, .skill-item { box-shadow: none; border: 1px solid #ccc; }
+    .result-tag.yes { background: #e8f4eb !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .result-tag.partly { background: #f7f4e8 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .btn-skill.active-ja { background: #3a7d4a !important; color: white !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .btn-skill.active-teils { background: #8a7a2c !important; color: white !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <img src="logo.jpg" alt="job-vision">
+  <div class="header-right">
+    <span class="phase-label" id="phaseLabel">Mein Profil</span>
+    <div class="progress-wrap">
+      <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+      <span class="progress-label" id="progressLabel"></span>
+    </div>
+  </div>
+</header>
+
+<main id="mainArea"></main>
+
+<footer>job-vision · Job-Coaching</footer>
+
+<script>
+// ─── DATEN ───────────────────────────────────────────────────────────────────
+
+const staerken = [
+  { name: "Kreativität", kat: "Wissen & Weisheit", desc: "Du findest neue Wege, wenn etwas nicht klappt. Andere sagen oft: «Auf die Idee wäre ich nie gekommen.» Routine langweilt dich – du denkst lieber quer." },
+  { name: "Neugier", kat: "Wissen & Weisheit", desc: "Du willst verstehen, wie Dinge funktionieren. Neue Themen ziehen dich an, du stellst Fragen, wo andere aufgehört haben nachzudenken. Lernen fühlt sich für dich nicht nach Pflicht an." },
+  { name: "Urteilsvermögen", kat: "Wissen & Weisheit", desc: "Du schaust dir eine Situation von mehreren Seiten an, bevor du ein Urteil fällst. Du lässt dich nicht so schnell von ersten Eindrücken leiten und merkst, wenn etwas komplizierter ist als es aussieht." },
+  { name: "Liebe zum Lernen", kat: "Wissen & Weisheit", desc: "Du eignest dir gerne neues Wissen an – nicht weil du musst, sondern weil es dich befriedigt. Nach einer Weiterbildung oder einem guten Gespräch fühlst du dich besser als vorher." },
+  { name: "Weitsicht", kat: "Wissen & Weisheit", desc: "Menschen fragen dich um Rat, weil du den Überblick behältst. Du siehst nicht nur, was jetzt gerade ist, sondern auch, was daraus werden könnte." },
+  { name: "Tapferkeit", kat: "Mut", desc: "Du sagst, was du denkst – auch wenn es unbequem ist. Wenn etwas wichtig ist, tust du es, auch wenn du Angst hast. Du weichst schwierigen Situationen nicht einfach aus." },
+  { name: "Ausdauer", kat: "Mut", desc: "Du fängst Dinge an und bringst sie zu Ende. Rückschläge bringen dich vom Kurs ab, aber nicht zum Aufhören. Die Zufriedenheit, wenn etwas fertig ist, treibt dich an." },
+  { name: "Ehrlichkeit", kat: "Mut", desc: "Du sagst, was du meinst – direkt und ohne Umwege. Du verstellst dich nicht, um jemandem zu gefallen. Andere wissen bei dir, woran sie sind." },
+  { name: "Tatendrang", kat: "Mut", desc: "Du packst an. Wenn du etwas entschieden hast, wartest du nicht lange. Energie und Begeisterung sind bei dir keine seltenen Gäste." },
+  { name: "Liebe geben und nehmen", kat: "Menschlichkeit", desc: "Enge Beziehungen sind dir wichtig. Du kümmerst dich um Menschen, die dir nahestehen, und lässt auch zu, dass sie sich um dich kümmern. Nähe macht dich nicht nervös." },
+  { name: "Grosszügigkeit", kat: "Menschlichkeit", desc: "Du hilfst gerne, ohne gleich zu rechnen, was du dafür bekommst. Anderen etwas Gutes zu tun gibt dir ein gutes Gefühl – manchmal mehr als wenn du selbst etwas bekommst." },
+  { name: "Soziale Intelligenz", kat: "Menschlichkeit", desc: "Du spürst, wie es anderen geht – auch wenn sie nichts sagen. Du weisst meistens, was in einer Situation gefragt ist, und passt dich an, ohne dich zu verbiegen." },
+  { name: "Teamfähigkeit", kat: "Gerechtigkeit", desc: "Du arbeitest gerne mit anderen zusammen. Du bringst dich ein, übernimmst Verantwortung, und stehst hinter Entscheidungen, die gemeinsam getroffen wurden – auch wenn du selbst es anders gemacht hättest." },
+  { name: "Fairness", kat: "Gerechtigkeit", desc: "Du behandelst Menschen gleich – egal wer sie sind. Wenn jemand ungerecht behandelt wird, stört dich das. Du hältst dich an Regeln, die du für richtig hältst." },
+  { name: "Führungsvermögen", kat: "Gerechtigkeit", desc: "Du kannst eine Gruppe organisieren und in eine Richtung bringen. Du siehst, wer was kann, teilst Aufgaben sinnvoll auf und sorgst dafür, dass ein Ziel erreicht wird." },
+  { name: "Vergebung", kat: "Mässigung", desc: "Du kannst loslassen. Wenn jemand einen Fehler gemacht hat, gibst du ihm eine zweite Chance. Du trägst Groll nicht lange mit dir herum – das kostet zu viel Energie." },
+  { name: "Bescheidenheit", kat: "Mässigung", desc: "Du stellst dich nicht in den Vordergrund. Deine Leistungen sprechen für sich, du brauchst keine grosse Bühne dafür. Andere schätzen, dass du nie angebend wirkst." },
+  { name: "Vorsicht", kat: "Mässigung", desc: "Du denkst nach, bevor du handelst. Entscheidungen triffst du nicht aus dem Bauch heraus, sondern erst wenn du die Konsequenzen überblickst. Das bewahrt dich vor Fehlern, die andere bereuen." },
+  { name: "Selbstregulation", kat: "Mässigung", desc: "Du hast deine Reaktionen im Griff – auch wenn es schwierig wird. Du kannst auf etwas verzichten, wenn es dir langfristig nützt. Disziplin fällt dir nicht immer leicht, aber du bringst sie auf." },
+  { name: "Sinn für Schönheit", kat: "Sinn", desc: "Du nimmst Dinge wahr, an denen andere vorbeigehen. Ein schönes Handwerk, ein gutes Gespräch, ein gelungenes Detail – das berührt dich. Du weisst, was Qualität ist." },
+  { name: "Dankbarkeit", kat: "Sinn", desc: "Du weisst, was du hast. Auch in schwierigen Zeiten findest du Dinge, für die es sich lohnt dankbar zu sein. Das gibt dir Stabilität." },
+  { name: "Hoffnung", kat: "Sinn", desc: "Du glaubst, dass es besser werden kann – und arbeitest daran. Schwierige Phasen bringen dich nicht dauerhaft aus dem Gleichgewicht, weil du weisst, dass sie nicht für immer sind." },
+  { name: "Humor", kat: "Sinn", desc: "Du kannst lachen – auch über dich selbst. Du nimmst das Leben ernst, aber nicht immer todernst. Mit dir ist es leichter, weil du weisst, wann ein Lachen mehr hilft als ein langes Gespräch." },
+  { name: "Sinn", kat: "Sinn", desc: "Du hast das Gefühl, dass dein Leben eine Richtung hat – jenseits von Arbeit und Alltag. Das gibt dir Halt, besonders wenn es schwierig wird." }
+];
+
+const hardSkills = [
+  { kat: "Produktion & Handwerk", items: [
+    "Mit Maschinen oder Geräten arbeiten",
+    "Dinge herstellen, montieren, zusammenbauen",
+    "Materialien bearbeiten (sägen, schweissen, nähen, schneiden ...)",
+    "Qualität kontrollieren, messen, prüfen",
+    "Reparieren, warten, instand halten"
+  ]},
+  { kat: "Logistik & Lager", items: [
+    "Waren annehmen, einlagern, kommissionieren",
+    "Verpacken, etikettieren, versandfertig machen",
+    "Fahrzeuge führen (Auto, Stapler, Lieferwagen)",
+    "Routen planen, Lieferungen koordinieren"
+  ]},
+  { kat: "Büro & Administration", items: [
+    "Texte schreiben, E-Mails, Briefe verfassen",
+    "Daten erfassen, pflegen, verwalten",
+    "Termine koordinieren, Kalender führen",
+    "Dokumente ablegen, archivieren",
+    "Mit Zahlen arbeiten, Rechnungen, Buchhaltung"
+  ]},
+  { kat: "Betreuung & Pflege", items: [
+    "Menschen begleiten, unterstützen, betreuen",
+    "Körperpflege, pflegerische Tätigkeiten",
+    "Kinder betreuen, fördern, begleiten",
+    "Ältere oder kranke Menschen unterstützen"
+  ]},
+  { kat: "Verkauf & Kundenkontakt", items: [
+    "Kunden beraten, informieren",
+    "Produkte oder Dienstleistungen verkaufen",
+    "Reklamationen bearbeiten, Lösungen finden",
+    "An der Kasse arbeiten"
+  ]},
+  { kat: "Gastronomie & Hauswirtschaft", items: [
+    "Kochen, zubereiten, anrichten",
+    "Servieren, Gäste empfangen",
+    "Reinigen, pflegen, in Ordnung halten",
+    "Wäsche, Haushalt organisieren"
+  ]},
+  { kat: "Führung & Organisation", items: [
+    "Aufgaben verteilen, Teams koordinieren",
+    "Projekte planen und begleiten",
+    "Entscheidungen treffen, Verantwortung übernehmen",
+    "Andere einarbeiten, anleiten"
+  ]},
+  { kat: "IT & Kommunikation", items: [
+    "Mit Computer, Tablet, Smartphone arbeiten",
+    "Software bedienen (Office, Kasse, spezifische Programme)",
+    "Inhalte erstellen (Texte, Bilder, Social Media)",
+    "Technische Probleme lösen"
+  ]}
+];
+
+// ─── STATE ───────────────────────────────────────────────────────────────────
+
+let phase = 'intro';        // intro | staerken | transition1 | hardskills1 | transition2 | hardskills2 | result
+let userName = '';
+let userDate = '';
+let staerkenCurrent = 0;
+let staerkenAnswers = new Array(24).fill(null);
+
+// Hard skills: flat list of all items
+const allSkills = hardSkills.flatMap(k => k.items);
+let skillsErfahrung = {};   // item -> 'ja'|'teils'|'nein'|null
+let skillsInteresse = {};
+allSkills.forEach(s => { skillsErfahrung[s] = null; skillsInteresse[s] = null; });
+
+// ─── PROGRESS ────────────────────────────────────────────────────────────────
+
+function updateProgress() {
+  const fill = document.getElementById('progressFill');
+  const label = document.getElementById('progressLabel');
+  const phaseLabel = document.getElementById('phaseLabel');
+
+  if (phase === 'staerken') {
+    const done = staerkenAnswers.filter(a => a !== null).length;
+    fill.style.width = Math.round(done / 24 * 100) + '%';
+    label.textContent = done + ' / 24';
+    phaseLabel.textContent = 'Das bin ich';
+  } else if (phase === 'hardskills1') {
+    const done = Object.values(skillsErfahrung).filter(v => v !== null).length;
+    fill.style.width = Math.round(done / allSkills.length * 100) + '%';
+    label.textContent = done + ' / ' + allSkills.length;
+    phaseLabel.textContent = 'Was ich schon gemacht habe';
+  } else if (phase === 'hardskills2') {
+    const done = Object.values(skillsInteresse).filter(v => v !== null).length;
+    fill.style.width = Math.round(done / allSkills.length * 100) + '%';
+    label.textContent = done + ' / ' + allSkills.length;
+    phaseLabel.textContent = 'Was ich mir vorstellen kann';
+  } else {
+    fill.style.width = '0%';
+    label.textContent = '';
+    phaseLabel.textContent = 'Mein Profil';
+  }
+}
+
+function phaseSteps(active) {
+  const steps = ['Das bin ich', 'Was ich gemacht habe', 'Was ich mir vorstelle'];
+  const states = ['staerken','hardskills1','hardskills2'];
+  return steps.map((s, i) => {
+    let cls = 'phase-step';
+    if (states[i] === active) cls += ' active';
+    else if (states.indexOf(active) > i) cls += ' done';
+    return `<span class="${cls}">${s}</span>`;
+  }).join('');
+}
+
+// ─── SCREENS ─────────────────────────────────────────────────────────────────
+
+function render() {
+  updateProgress();
+  const m = document.getElementById('mainArea');
+  if (phase === 'intro') m.innerHTML = introHTML();
+  else if (phase === 'staerken') m.innerHTML = staerkenHTML();
+  else if (phase === 'transition1') m.innerHTML = transition1HTML();
+  else if (phase === 'hardskills1') m.innerHTML = hardSkillsHTML('erfahrung');
+  else if (phase === 'transition2') m.innerHTML = transition2HTML();
+  else if (phase === 'hardskills2') m.innerHTML = hardSkillsHTML('interesse');
+  else if (phase === 'result') m.innerHTML = resultHTML();
+}
+
+function introHTML() {
+  const d = new Date();
+  const today = d.getDate().toString().padStart(2,'0') + '.' + (d.getMonth()+1).toString().padStart(2,'0') + '.' + d.getFullYear();
+  return `
+  <div class="center-screen">
+    <h1>Mein Profil</h1>
+    <p>Drei Schritte, um dich besser kennenzulernen.</p>
+    <span class="time-note">Dauer: ca. 15–20 Minuten</span>
+    <div class="phase-steps">${phaseSteps('')}</div>
+    <div class="meta-row">
+      <div class="meta-field">
+        <label>Name, Vorname</label>
+        <input type="text" id="introName" placeholder="..." value="${userName}">
+      </div>
+      <div class="meta-field">
+        <label>Datum</label>
+        <input type="text" id="introDate" placeholder="..." value="${userDate || today}">
+      </div>
+    </div>
+    <button class="btn-primary" onclick="startIntro()">Starten</button>
+  </div>`;
+}
+
+function startIntro() {
+  userName = document.getElementById('introName').value;
+  userDate = document.getElementById('introDate').value;
+  phase = 'staerken';
+  staerkenCurrent = 0;
+  render();
+}
+
+function staerkenHTML() {
+  const s = staerken[staerkenCurrent];
+  const i = staerkenCurrent;
+  const back = i > 0 ? `<button class="btn-back" onclick="staerkenBack()">← Zurück</button>` : '';
+  return `
+  <div class="card-screen">
+    <div class="category-label">${s.kat}</div>
+    <div class="card">
+      <div class="card-title">${s.name}</div>
+      <div class="card-desc">${s.desc}</div>
+      <div class="answer-buttons">
+        <button class="btn-answer btn-yes ${staerkenAnswers[i]==='ja'?'selected':''}" onclick="staerkenAnswer('ja')">Ja, das bin ich</button>
+        <button class="btn-answer btn-partly ${staerkenAnswers[i]==='teils'?'selected':''}" onclick="staerkenAnswer('teils')">Teils, teils</button>
+        <button class="btn-answer btn-no ${staerkenAnswers[i]==='nein'?'selected':''}" onclick="staerkenAnswer('nein')">Eher nicht</button>
+      </div>
+    </div>
+    ${back}
+  </div>`;
+}
+
+function staerkenAnswer(val) {
+  staerkenAnswers[staerkenCurrent] = val;
+  if (staerkenCurrent < 23) { staerkenCurrent++; }
+  else { phase = 'transition1'; }
+  render();
+}
+
+function staerkenBack() {
+  if (staerkenCurrent > 0) { staerkenCurrent--; render(); }
+}
+
+function transition1HTML() {
+  return `
+  <div class="center-screen">
+    <h2>Gut gemacht.</h2>
+    <p>Teil 1 ist fertig. Jetzt geht es darum, was du beruflich schon gemacht hast.</p>
+    <p style="margin-top:8px;">Kreuze alles an, womit du Erfahrung hast – auch wenn es lange her ist.</p>
+    <span class="time-note" style="margin-top:16px;">Dauer: ca. 5 Minuten</span>
+    <div class="phase-steps" style="margin-bottom:28px;">${phaseSteps('hardskills1')}</div>
+    <button class="btn-primary" onclick="phase='hardskills1';render()">Weiter</button>
+  </div>`;
+}
+
+function transition2HTML() {
+  return `
+  <div class="center-screen">
+    <h2>Und jetzt: der Blick nach vorne.</h2>
+    <p>Dieselbe Liste – aber jetzt die Frage: Was könntest du dir vorstellen zu tun?</p>
+    <p style="margin-top:8px;">Du kannst auch Dinge ankreuzen, die du noch nie gemacht hast, die dich aber reizen.</p>
+    <span class="time-note" style="margin-top:16px;">Dauer: ca. 5 Minuten</span>
+    <div class="phase-steps" style="margin-bottom:28px;">${phaseSteps('hardskills2')}</div>
+    <button class="btn-primary" onclick="phase='hardskills2';render()">Weiter</button>
+  </div>`;
+}
+
+function hardSkillsHTML(mode) {
+  const store = mode === 'erfahrung' ? skillsErfahrung : skillsInteresse;
+  const title = mode === 'erfahrung' ? 'Was ich schon gemacht habe' : 'Was ich mir vorstellen kann';
+  const btnJa = mode === 'erfahrung' ? 'Ja, gemacht' : 'Ja, vorstellen';
+
+  const cats = hardSkills.map(k => {
+    const rows = k.items.map(item => {
+      const v = store[item];
+      return `
+      <div class="skill-item">
+        <span class="skill-name">${item}</span>
+        <div class="skill-buttons">
+          <button class="btn-skill ${v==='ja'?'active-ja':''}" onclick="skillAnswer('${mode}',\`${item.replace(/`/g,'\\`')}\`,'ja')">${btnJa}</button>
+          <button class="btn-skill ${v==='teils'?'active-teils':''}" onclick="skillAnswer('${mode}',\`${item.replace(/`/g,'\\`')}\`,'teils')">Teils</button>
+          <button class="btn-skill ${v==='nein'?'active-nein':''}" onclick="skillAnswer('${mode}',\`${item.replace(/`/g,'\\`')}\`,'nein')">Nein</button>
+        </div>
+      </div>`;
+    }).join('');
+    return `<div class="skills-category">
+      <div class="skills-category-title">${k.kat}</div>
+      ${rows}
+    </div>`;
+  }).join('');
+
+  const nextPhase = mode === 'erfahrung' ? 'transition2' : 'result';
+  const nextLabel = mode === 'erfahrung' ? 'Weiter →' : 'Ergebnis anzeigen';
+  const backPhase = mode === 'erfahrung' ? 'transition1' : 'transition2';
+
+  return `
+  <div class="skills-screen">
+    <h2>${title}</h2>
+    <p class="skills-intro">Kreuze bei jeder Tätigkeit an, was zutrifft.</p>
+    ${cats}
+    <div class="skills-nav">
+      <button class="btn-secondary" onclick="phase='${backPhase}';render()">← Zurück</button>
+      <button class="btn-primary" onclick="phase='${nextPhase}';render()">${nextLabel}</button>
+    </div>
+  </div>`;
+}
+
+function skillAnswer(mode, item, val) {
+  if (mode === 'erfahrung') skillsErfahrung[item] = val;
+  else skillsInteresse[item] = val;
+  updateProgress();
+  // Re-render nur den Button-Status ohne Scroll-Reset
+  const store = mode === 'erfahrung' ? skillsErfahrung : skillsInteresse;
+  document.querySelectorAll('.skill-item').forEach(el => {
+    const name = el.querySelector('.skill-name').textContent;
+    if (name === item) {
+      el.querySelectorAll('.btn-skill').forEach(btn => {
+        btn.classList.remove('active-ja','active-teils','active-nein');
+      });
+      const btns = el.querySelectorAll('.btn-skill');
+      const map = {'ja': 0, 'teils': 1, 'nein': 2};
+      if (val !== null && map[val] !== undefined) {
+        btns[map[val]].classList.add('active-' + val);
+      }
+    }
+  });
+}
+
+function resultHTML() {
+  const tags = (arr, cls) => arr.length
+    ? arr.map(n => `<span class="result-tag ${cls}">${n}</span>`).join('')
+    : `<span class="result-empty">–</span>`;
+
+  // Stärken
+  const sJa = staerken.filter((s,i) => staerkenAnswers[i]==='ja').map(s=>s.name);
+  const sTeils = staerken.filter((s,i) => staerkenAnswers[i]==='teils').map(s=>s.name);
+
+  // Hard skills Erfahrung
+  const eJa = allSkills.filter(s => skillsErfahrung[s]==='ja');
+  const eTeils = allSkills.filter(s => skillsErfahrung[s]==='teils');
+
+  // Hard skills Interesse
+  const iJa = allSkills.filter(s => skillsInteresse[s]==='ja');
+  const iTeils = allSkills.filter(s => skillsInteresse[s]==='teils');
+
+  return `
+  <div class="result-screen">
+    <h2>Mein Profil</h2>
+    <p class="result-subtitle">${userName ? userName + ' · ' : ''}${userDate}</p>
+
+    <div class="result-block">
+      <div class="result-block-title">Das bin ich</div>
+      <div class="result-section">
+        <div class="result-section-title yes">Ja, das bin ich (${sJa.length})</div>
+        <div class="result-tags">${tags(sJa,'yes')}</div>
+      </div>
+      <div class="result-section">
+        <div class="result-section-title partly">Teils, teils (${sTeils.length})</div>
+        <div class="result-tags">${tags(sTeils,'partly')}</div>
+      </div>
+    </div>
+
+    <div class="result-block">
+      <div class="result-block-title">Was ich schon gemacht habe</div>
+      <div class="result-section">
+        <div class="result-section-title yes">Ja, gemacht (${eJa.length})</div>
+        <div class="result-tags">${tags(eJa,'yes')}</div>
+      </div>
+      <div class="result-section">
+        <div class="result-section-title partly">Teils (${eTeils.length})</div>
+        <div class="result-tags">${tags(eTeils,'partly')}</div>
+      </div>
+    </div>
+
+    <div class="result-block">
+      <div class="result-block-title">Was ich mir vorstellen kann</div>
+      <div class="result-section">
+        <div class="result-section-title yes">Ja, vorstellen (${iJa.length})</div>
+        <div class="result-tags">${tags(iJa,'yes')}</div>
+      </div>
+      <div class="result-section">
+        <div class="result-section-title partly">Teils (${iTeils.length})</div>
+        <div class="result-tags">${tags(iTeils,'partly')}</div>
+      </div>
+    </div>
+
+    <div class="print-row">
+      <button class="btn-primary" onclick="window.print()">Drucken / Als PDF speichern</button>
+      <button class="btn-secondary" onclick="saveText()">Als Textdatei speichern</button>
+    </div>
+  </div>`;
+}
+
+function saveText() {
+  const sJa = staerken.filter((s,i) => staerkenAnswers[i]==='ja').map(s=>s.name);
+  const sTeils = staerken.filter((s,i) => staerkenAnswers[i]==='teils').map(s=>s.name);
+  const eJa = allSkills.filter(s => skillsErfahrung[s]==='ja');
+  const eTeils = allSkills.filter(s => skillsErfahrung[s]==='teils');
+  const iJa = allSkills.filter(s => skillsInteresse[s]==='ja');
+  const iTeils = allSkills.filter(s => skillsInteresse[s]==='teils');
+
+  const txt = `MEIN PROFIL – job-vision
+${userName ? 'Name: ' + userName + '\n' : ''}Datum: ${userDate}
+
+── DAS BIN ICH ──────────────────────
+Ja: ${sJa.join(', ') || '–'}
+Teils: ${sTeils.join(', ') || '–'}
+
+── WAS ICH SCHON GEMACHT HABE ───────
+Ja: ${eJa.join(', ') || '–'}
+Teils: ${eTeils.join(', ') || '–'}
+
+── WAS ICH MIR VORSTELLEN KANN ──────
+Ja: ${iJa.join(', ') || '–'}
+Teils: ${iTeils.join(', ') || '–'}
+`;
+
+  const blob = new Blob(['\ufeff' + txt], { type: 'text/plain;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'mein-profil.txt';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(a.href);
+}
+
+// Start
+render();
+</script>
+</body>
+</html>
